@@ -1,6 +1,6 @@
 from django.urls import path
 
-from . import views
+from polls import views
 
 app_name = 'polls'  # Set the name of this namespace, it could be used in the templates <% url 'polls:detail'...
 

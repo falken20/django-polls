@@ -1,37 +1,35 @@
 from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse
+from django.views import generic
 
 from .models import Question, Choice
 
 
-def example(reuqest):
+def example(request):
     return HttpResponse('Response')
 
 
-def index(request):
-    latest_question_list = Question.objects.order_by('-pub_date')[:5]
-    context = {
-        'latest_question_list': latest_question_list,
-    }
-    # It could make in this way or only in one return with render method
-    # template = loader.get_template('polls/index.html')  # django.template.loader
-    # return HttpResponse(template.render(context, request))
-
-    return render(request, 'polls/index.html', context)
+# IndexView, DetailView and ResultView use GenericViews (django.generic)
 
 
-def detail(request, question_id):
-    # question = Question.objects.get(pk=question_id)  # It is valid get(id=question_id) as well
-    question = get_object_or_404(Question, pk=question_id)
+class IndexView(generic.ListView):
+    template_name = 'polls/index.html'
+    context_object_name = 'latest_question_list'
 
-    return render(request, 'polls/detail.html', {'question': question})
+    def get_queryset(self):
+        """Return the last five published questions."""
+        return Question.objects.order_by('-pub_date')[:5]
 
 
-def results(request, question_id):
-    question = get_object_or_404(Question, pk=question_id)
+class DetailView(generic.DetailView):
+    model = Question
+    template_name = 'polls/detail.html'
 
-    return render(request, 'polls/results.html', {'question': question})
+
+class ResultsView(generic.DetailView):
+    model = Question
+    template_name = 'polls/results.html'
 
 
 def vote(request, question_id):
@@ -56,6 +54,3 @@ def vote(request, question_id):
         # reverse() function helps avoid having to hardcode a URL in the view
         # function. It is given the name of the view that we want to pass control to and
         # the variable portion of the URL pattern that points to that view.
-
-
-
