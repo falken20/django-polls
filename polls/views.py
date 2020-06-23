@@ -2,6 +2,7 @@ from django.shortcuts import render, get_object_or_404
 from django.http import HttpResponse, Http404, HttpResponseRedirect
 from django.urls import reverse
 from django.views import generic
+from django.utils import timezone
 
 from .models import Question, Choice
 
@@ -14,22 +15,36 @@ def example(request):
 
 
 class IndexView(generic.ListView):
+    # In case not to set template_name, Django look for the template with the name
+    # <app name>/<model name>_list.html
     template_name = 'polls/index.html'
     context_object_name = 'latest_question_list'
 
     def get_queryset(self):
-        """Return the last five published questions."""
-        return Question.objects.order_by('-pub_date')[:5]
+        """Return the last five published questions. Not including those set to
+        the published in the future"""
+        return Question.objects.filter(pub_date__lte=timezone.now()).order_by('-pub_date')[:5]
 
 
 class DetailView(generic.DetailView):
     model = Question
+    # In case not to set template_name, Django look for the template with the name
+    # <app name>/<model name>_detail.html
     template_name = 'polls/detail.html'
+
+    def get_queryset(self):
+        """Excludes any question that aren't published yet."""
+        return Question.objects.filter(pub_date__lte=timezone.now())
 
 
 class ResultsView(generic.DetailView):
     model = Question
+    # In case not to set template_name, Django look for the template with the name
+    # <app name>/<model name>_detail.html
     template_name = 'polls/results.html'
+
+    def get_queryset(self):
+        pass
 
 
 def vote(request, question_id):

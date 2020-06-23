@@ -1,5 +1,8 @@
 .idea/
+.vscode/
+.DS_Store
 venv/
 *.py[cod]
 __pycache__/
 lib/
+.coverage  # coverage tests
