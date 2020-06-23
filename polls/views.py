@@ -18,7 +18,7 @@ class IndexView(generic.ListView):
     # In case not to set template_name, Django look for the template with the name
     # <app name>/<model name>_list.html
     template_name = 'polls/index.html'
-    context_object_name = 'latest_question_list'
+    context_object_name = 'latest_question_list'  # By defect <model name>_list
 
     def get_queryset(self):
         """Return the last five published questions. Not including those set to
@@ -27,18 +27,22 @@ class IndexView(generic.ListView):
 
 
 class DetailView(generic.DetailView):
-    model = Question
+    model = Question  # It is like code: queryset = Question.objects.all()
+
     # In case not to set template_name, Django look for the template with the name
     # <app name>/<model name>_detail.html
     template_name = 'polls/detail.html'
 
+    # It could be used both of them, either queryset or get_queryset, but get_queryset
+    # allows more logic.
+    # queryset = Question.objects.filter(pub_date__lte=timezone.now())
     def get_queryset(self):
         """Excludes any question that aren't published yet."""
         return Question.objects.filter(pub_date__lte=timezone.now())
 
 
 class ResultsView(generic.DetailView):
-    model = Question
+    model = Question  # It is like code: queryset = Question.objects.all()
     # In case not to set template_name, Django look for the template with the name
     # <app name>/<model name>_detail.html
     template_name = 'polls/results.html'
