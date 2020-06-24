@@ -19,7 +19,7 @@ class IndexView(generic.ListView):
     # <app name>/<model name>_list.html
     template_name = 'polls/index.html'
     context_object_name = 'latest_question_list'  # By defect <model name>_list
-
+    
     def get_queryset(self):
         """Return the last five published questions. Not including those set to
         the published in the future"""
@@ -47,8 +47,10 @@ class ResultsView(generic.DetailView):
     # <app name>/<model name>_detail.html
     template_name = 'polls/results.html'
 
-    def get_queryset(self):
-        pass
+    # It could be used both of them, either queryset or get_queryset, but get_queryset
+    # allows more logic.
+    queryset = Question.objects.filter(pub_date__lte=timezone.now())
+    # def get_queryset(self):
 
 
 def vote(request, question_id):
